@@ -65,6 +65,7 @@
     <button class="tab-btn active" onclick="openTab(event, 'ballistics')">BALLISTICS</button>
     <button class="tab-btn" onclick="openTab(event, 'latent-prints')">LATENT PRINTS</button>
     <button class="tab-btn" onclick="openTab(event, 'dna')">DNA / SEROLOGY</button>
+    <button class="tab-btn" onclick="openTab(event, 'narcotics')">NARCOTICS</button>
 </div>
 
 <div class="container">
@@ -137,6 +138,25 @@
         <button class="build-btn" onclick="buildDNA()">Generate DNA BBCode</button>
     </div>
 
+    <div id="narcotics" class="form-section">
+        <h2>Narcotics Confirmatory Analysis</h2>
+        <div class="row">
+            <div class="form-group"><label>Req. #</label><input type="text" id="nc_reqNum" placeholder="0026"></div>
+            <div class="form-group"><label>Date</label><input type="text" id="nc_drNum" placeholder="01/10"></div>
+        </div>
+        <div class="row">
+            <div class="form-group"><label>Requested By</label><input type="text" id="nc_reqBy" placeholder="Officer Name & Serial"></div>
+            <div class="form-group"><label>Email</label><input type="text" id="nc_email" placeholder="officer@lspd.online"></div>
+        </div>
+        <div class="section-title">Narcotics Evidence Configuration</div>
+        <div class="form-group">
+            <label>Number of Substances:</label>
+            <input type="number" id="nc_count" value="1" min="1" onchange="genFieldsNC()">
+        </div>
+        <div id="nc_items_container"></div>
+        <button class="build-btn" onclick="buildNC()">Generate Narcotics BBCode</button>
+    </div>
+
     <div id="output-area" style="display:none; margin-top:40px; border-top: 2px solid #eee;">
         <div class="section-title">Generated BBCode Output</div>
         <textarea id="universal_output" class="output-box" readonly></textarea>
@@ -146,6 +166,29 @@
 </div>
 
 <script>
+
+const drugData = {
+    "Crack Cocaine": { "formal_name": "Cocaine Base (Crack Cocaine)", "description": "The rock-like material tested positive with the Scott reagent and GC-MS confirmed [b]cocaine base[/b] (crack cocaine).", "tests": ["Scott", "GC-MS"], "descriptor_template": "Seized rock-like substance ({weight} grams, off-white rocks)" },
+    "Cocaine": { "formal_name": "Benzoylecgonine Methyl Ester (Cocaine)", "description": "Scott reagent turned blue, consistent with tropane alkaloids. GC-MS analysis confirmed [b]benzoylecgonine methyl ester[/b] (cocaine), an alkaloid derived from the coca plant.", "tests": ["Scott", "GC-MS"], "descriptor_template": "Seized white powder ({weight} grams)" },
+    "Heroin": { "formal_name": "Diamorphine (Heroin)", "description": "Marquis reagent produced a purple-brown reaction and Mecke reagent produced green coloration, both indicative of opiate alkaloids. GC-MS analysis confirmed the presence of [b]diamorphine[/b] (heroin), a semi-synthetic opioid derived from morphine.", "tests": ["Marquis", "Mecke", "GC-MS"], "descriptor_template": "Seized powdered substance ({weight} grams, brown powder)" },
+    "Methamphetamine": { "formal_name": "(S)-Methamphetamine Hydrochloride (Methamphetamine)", "description": "The crystalline substance produced an orange-brown Marquis reaction and blue Simons test, indicating a secondary amine. GC-MS confirmed the presence of [b]b-methamphetamine hydrochloride[/b] (methamphetamine).", "tests": ["Marquis", "Simon’s", "GC-MS"], "descriptor_template": "Seized crystalline material ({weight} grams, clear crystalline shards)" },
+    "Cannabis": { "formal_name": "Tetrahydrocannabinol (Cannabis)", "description": "Microscopic examination revealed glandular trichomes and cystolithic hairs consistent with cannabis plant material. Duquenois Levine test produced a purple color upon chloroform extraction. GC-MS confirmed the presence of [b]tetrahydrocannabinol (THC)[/b], the primary psychoactive compound in cannabis.", "tests": ["Microscopy", "Duquenois-Levine", "GC-MS"], "descriptor_template": "Seized organic material ({weight} grams, green leafy substance)" },
+    "Xanax": { "formal_name": "Alprazolam (Xanax)", "description": "GC-MS and FTIR confirmed the presence of [b]alprazolam[/b] (Xanax), a benzodiazepine.", "tests": ["FTIR", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, pharmaceutical grade)" },
+    "Vicodin": { "formal_name": "Hydrocodone Bitartrate (Vicodin)", "description": "FTIR and GC-MS confirmed the presence of [b]hydrocodone bitartrate[/b] (Vicodin), a semi-synthetic opioid.", "tests": ["FTIR", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, white tablets)" },
+    "Valium": { "formal_name": "Diazepam (Valium)", "description": "FTIR and GC-MS confirmed the presence of [b]diazepam[/b] (Valium), a benzodiazepine.", "tests": ["FTIR", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, blue pharmaceutical tablets)" },
+    "Morphine": { "formal_name": "Morphine Sulfate (Morphine)", "description": "Mecke reagent produced a green color shift. GC-MS confirmed [b]morphine sulfate[/b], a naturally occurring opiate analgesic.", "tests": ["Mecke", "GC-MS"], "descriptor_template": "Seized powdered substance ({weight} grams, off-white powder)" },
+    "PCP": { "formal_name": "Phencyclidine (PCP)", "description": "Mandelin reagent yielded a yellow-green reaction. GC-MS confirmed [b]phencyclidine[/b] (PCP), a dissociative hallucinogen.", "tests": ["Mandelin", "GC-MS"], "descriptor_template": "Seized crystalline substance ({weight} grams, pale yellow powder)" },
+    "Adderall": { "formal_name": "Mixed Amphetamine Salts (Adderall)", "description": "Marquis reagent produced an orange color indicative of amphetamines. GC-MS confirmed [b]mixed amphetamine salts[/b] consistent with Adderall.", "tests": ["Marquis", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, orange tablets)" },
+    "Mescaline": { "formal_name": "3,4,5-Trimethoxyphenethylamine (Mescaline)", "description": "Marquis reagent yielded a yellow-orange reaction. GC-MS confirmed [b]mescaline[/b], a naturally occurring psychedelic alkaloid.", "tests": ["Marquis", "GC-MS"], "descriptor_template": "Seized dried plant material ({weight} grams, cactus-derived)" },
+    "Bath Salts": { "formal_name": "Synthetic Cathinones (Bath Salts)", "description": "The tan powder produced a bright yellow with Liebermann reagent. GC-MS analysis detected synthetic cathinones, consistent with [b]3,4-methylenedioxypyrovalerone (MDPV)[/b] or similar compounds.", "tests": ["Liebermann", "GC-MS"], "descriptor_template": "Seized tan granular substance ({weight} grams)" },
+    "Oxycodone": { "formal_name": "Oxycodone Hydrochloride (Oxy)", "description": "FTIR and GC-MS confirmed the presence of [b]oxycodone hydrochloride[/b], a semi-synthetic opioid used for pain management.", "tests": ["FTIR", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, round white tablets)" },
+    "Ketamine": { "formal_name": "Ketamine Hydrochloride (Ketamine)", "description": "Mandelin reagent turned orange. GC-MS confirmed [b]ketamine hydrochloride[/b], a dissociative anesthetic.", "tests": ["Mandelin", "GC-MS"], "descriptor_template": "Seized crystalline substance ({weight} grams, colorless powder)" },
+    "Psilocybin Mushrooms": { "formal_name": "Psilocybin (Psilocybin Mushrooms)", "description": "Microscopic analysis confirmed the presence of psilocybin-containing fungal spores. GC-MS confirmed [b]psilocybin[/b], a naturally occurring hallucinogen derived from species such as Psilocybe cubensis.", "tests": ["Microscopy", "GC-MS"], "descriptor_template": "Seized fungal material ({weight} grams, dried mushrooms)" },
+    "MDMA": { "formal_name": "3,4-Methylenedioxymethamphetamine (MDMA)", "description": "Marquis reagent produced a dark purple reaction. GC-MS confirmed [b]3,4-methylenedioxymethamphetamine[/b] (MDMA), a substituted amphetamine commonly known as ecstasy.", "tests": ["Marquis", "GC-MS"], "descriptor_template": "Seized tablets ({weight} total, multicolored pressed pills)" },
+    "Cannabis Edibles": { "formal_name": "Tetrahydrocannabinol (THC, Cannabis Edibles)", "description": "Duquenois Levine test produced a purple coloration on extracted sample. GC-MS confirmed [b]tetrahydrocannabinol (THC)[/b] within the edible substrate.", "tests": ["Duquenois-Levine", "GC-MS"], "descriptor_template": "Seized edible items ({weight} total, cannabis-infused food products)" },
+    "Codeine": { "formal_name": "Codeine Phosphate (Codeine)", "description": "Mecke reagent produced a green coloration. GC-MS confirmed [b]codeine phosphate[/b], a mild opiate used for analgesia and cough suppression.", "tests": ["Mecke", "GC-MS"], "descriptor_template": "Seized bottled liquid ({weight} mL, cough syrup)" }
+};
+
 // PERSISTENCE LOGIC: Save name and badge to browser storage
 function saveStaff() {
     localStorage.setItem('lspd_name', document.getElementById('global_name').value);
@@ -216,6 +259,36 @@ function genFieldsDNA() {
                 <div class="row">
                     <div class="form-group"><label>Status</label><select id="dna_status_${i}" onchange="toggleMatch('dna', ${i})"><option value="no">Unmatched</option><option value="yes">Identified</option></select></div>
                     <div class="form-group" id="dna_match_box_${i}" style="display:none;"><label>Match To (Name - Role)</label><input type="text" id="dna_match_${i}" placeholder="Tariq Shareef - VICTIM"></div>
+                </div>
+            </div>`;
+    }
+}
+
+function genFieldsNC() {
+    const container = document.getElementById('nc_items_container');
+    const count = document.getElementById('nc_count').value;
+    container.innerHTML = '';
+    
+    // Create dropdown options once
+    let drugOptions = Object.keys(drugData).map(key => `<option value="${key}">${key}</option>`).join('');
+
+    for (let i = 1; i <= count; i++) {
+        container.innerHTML += `
+            <div class="item-card">
+                <h4>Narcotic Item #${i}</h4>
+                <div class="row">
+                    <div class="form-group" style="flex:2;">
+                        <label>Substance Type</label>
+                        <select id="nc_drug_${i}">${drugOptions}</select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Weight / Quantity</label>
+                        <input type="number" id="nc_weight_${i}" placeholder="15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>EL Tag (Optional)</label>
+                    <input type="text" id="nc_el_${i}" placeholder="EL-00123">
                 </div>
             </div>`;
     }
@@ -463,6 +536,70 @@ The submitted items, as well as any associated relevant items, have been properl
     showOutput(template);
 }
 
+
+
+function buildNC() {
+    const reqNum = document.getElementById('nc_reqNum').value;
+    const date = document.getElementById('nc_drNum').value;
+    const reqBy = document.getElementById('nc_reqBy').value;
+    const email = document.getElementById('nc_email').value;
+    const count = document.getElementById('nc_count').value;
+
+    let evList = "", resList = "";
+    let allTests = new Set();
+
+    for (let i = 1; i <= count; i++) {
+        const drugKey = document.getElementById(`nc_drug_${i}`).value;
+        const weight = document.getElementById(`nc_weight_${i}`).value || 0;
+        const el = document.getElementById(`nc_el_${i}`).value || "N/A";
+        const drug = drugData[drugKey];
+
+        const label = `Item ${i} (${el})`;
+        const descriptor = drug.descriptor_template.replace('{weight}', weight);
+        
+        evList += `[*] ${label} – ${descriptor}\n`;
+        resList += `[b]${label}[/b] - [color=green]Result: Conclusive – ${drug.formal_name}[/color]\n[list]${drug.description}[/list]\n\n`;
+        
+        drug.tests.forEach(t => allTests.add(t));
+    }
+
+    const testStr = Array.from(allTests).join(", ");
+
+    const template = `[divbox2=white][font=Arial][aligntable=left,0,35,0,0,0,0][tsslogo=150][/aligntable]
+[center]Los Santos Police Department  
+Forensic Science Division  
+[size=130][b]Laboratory Report[/b][/size]  
+NAU-${reqNum}-${getInitials()}${date} / Req. #${reqNum}
+Report finalized: ${date}[/center]  
+[br][/br]  
+[aligntable=right,0,0,30,0,0,0][size=90][b]Name Associated:[/b][space=10] UNK  
+[b]Offense:[/b][space=68] UNK  
+[b]Service:[/b][space=70] CONFIRMATORY TEST[/size][/aligntable]  
+[aligntable=left,0,40,0,0,0,0][size=90][b]DR #:[/b][space=78] NAU-${reqNum}-${getInitials()}${date} 
+[b]Requested By:[/b][space=23] ${reqBy}  
+[b]E-Mail:[/b][space=70] ${email}[/size][/aligntable]  
+[br][/br]  
+[aligntable=left,0,40,0,0,0,0][size=90][b]Analysis Requested:[/b] [space=10] Presumptive Development
+[space=137] Confirmatory Test Screening[/aligntable]
+[br][/br][br][/br]  
+[justify][size=90]I, the undersigned analyst, as a Criminalist employed by the Los Santos Police Department, am prepared to testify to the information provided in this report.[/size]  
+[u][b]Evidence Item(s):[/b][/u]
+[list]
+${evList}[/list]
+[u][b]Examination Results[/b][/u]
+${resList}
+[u][b]Conclusion(s)[/b][/u]
+The submitted substance(s) were analyzed using the following methods: [b]${testStr}[/b]. The analysis confirmed the presence of controlled substances as listed above.
+[u][b]Preservation of Result(s)[/b][/u]
+The submitted item, as well as any associated relevant items, have been properly preserved in accordance with Forensic Science Division and ISO 17025 accredited laboratory guidelines.
+[size=85]Analyst: ${getAnalyst()}[/size][/justify]
+[aligntable=left,0,0,0,0,0,0][size=75]Los Santos Police Department[/size][/aligntable]
+[aligntable=right,0,0,0,0,0,0][size=75]Forensic Science Division[/size][/aligntable][/divbox2]`;
+
+    showOutput(template);
+}
+
+
 function showOutput(text) {
     document.getElementById("universal_output").value = text;
     document.getElementById("output-area").style.display = "block";
@@ -482,6 +619,7 @@ window.onload = function() {
     genFieldsBR(); 
     genFieldsLP(); 
     genFieldsDNA(); 
+    genFieldsNC();
 };
 </script>
 
