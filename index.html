@@ -748,9 +748,10 @@ function genFieldsNC(){
 }
 
 function toggleMatch(p,i){
-  const v=document.getElementById(`${p}_status_${i}`).value;
+  const statusElement = document.getElementById(`${p}_status_${i}`);
+  const v=statusElement.value;
   document.getElementById(`${p}_match_box_${i}`).classList.toggle('shown',v==='yes');
-  document.getElementById(`${p}_status_${i}`).style.borderColor = (v === 'yes' ? "green" : (v === "no" ? "red" : "orange"));
+  statusElement.style.borderColor = (v === 'yes' ? "green" : (v === "no" ? "red" : "orange"));
 }
 
 function showOutput(tab,text){
