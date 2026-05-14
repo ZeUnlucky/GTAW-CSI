@@ -569,57 +569,182 @@ function makeItemCard(i,content){
   return `<div class="item-card"><div class="item-card-header"><span class="item-num">${i}</span>Item ${i}</div>${content}</div>`;
 }
 
+function saveContainerValues(containerId){
+  const data = {};
+
+  document.querySelectorAll(`#${containerId} input, #${containerId} textarea, #${containerId} select`)
+    .forEach(el => data[el.id] = el.value);
+
+  return data;
+}
+
+function restoreValues(data){
+  for(const id in data){
+    const el = document.getElementById(id);
+    if(el) el.value = data[id];
+  }
+}
+
+/* =========================
+   BALLISTICS
+========================= */
 function genFieldsBR(){
-  const n=+document.getElementById('br_count').value;
-  document.getElementById('br_items_container').innerHTML=Array.from({length:n},(_,k)=>{
-    const i=k+1;
-    return makeItemCard(i,`
-      <div class="field" style="margin-bottom:10px"><label>Description</label><input type="text" id="br_desc_${i}" placeholder="One (1) 9mm Shell Casing"></div>
-      <div class="row">
-        <div class="field"><label>Status</label><select id="br_status_${i}" onchange="toggleMatch('br',${i})"><option value="no">No match</option><option value="yes">Match found</option></select></div>
-        <div class="field match-box" id="br_match_box_${i}"><label>Match to</label><textarea id="br_match_${i}" placeholder="Casings A" rows="2"></textarea></div>
-      </div>`);
-  }).join('');
-}
+  const containerId = "br_items_container";
+  const saved = saveContainerValues(containerId);
+  const n = +document.getElementById("br_count").value;
 
-function genFieldsLP(){
-  const n=+document.getElementById('lp_count').value;
-  document.getElementById('lp_items_container').innerHTML=Array.from({length:n},(_,k)=>{
-    const i=k+1;
-    return makeItemCard(i,`
-      <div class="field" style="margin-bottom:10px"><label>Item description</label><input type="text" id="lp_desc_${i}" placeholder="One (1) 9mm Shell Casing"></div>
-      <div class="row">
-        <div class="field"><label>Status</label><select id="lp_status_${i}" onchange="toggleMatch('lp',${i})"><option value="no">No usable prints</option><option value="yes">Prints identified</option></select></div>
-        <div class="field match-box" id="lp_match_box_${i}"><label>Identified to</label><textarea id="lp_match_${i}" placeholder="Ruby Marks"></textarea></div>
-      </div>`);
-  }).join('');
-}
+  let html = "";
 
-function genFieldsDNA(){
-  const n=+document.getElementById('dna_count').value;
-  document.getElementById('dna_items_container').innerHTML=Array.from({length:n},(_,k)=>{
-    const i=k+1;
-    return makeItemCard(i,`
-      <div class="field" style="margin-bottom:10px"><label>HEX profile</label><input type="text" id="dna_hex_${i}" placeholder="4F506-F7354..."></div>
-      <div class="row">
-        <div class="field"><label>Status</label><select id="dna_status_${i}" onchange="toggleMatch('dna',${i})"><option value="no">Unmatched</option><option value="yes">Identified</option></select></div>
-        <div class="field match-box" id="dna_match_box_${i}"><label>Match to</label><textarea id="dna_match_${i}" placeholder="Ruby Marks – VICTIM"></textarea></div>
-      </div>`);
-  }).join('');
-}
-
-function genFieldsNC(){
-  const n=+document.getElementById('nc_count').value;
-  const opts=Object.keys(drugData).map(k=>`<option value="${k}">${k}</option>`).join('');
-  document.getElementById('nc_items_container').innerHTML=Array.from({length:n},(_,k)=>{
-    const i=k+1;
-    return makeItemCard(i,`
-      <div class="row" style="margin-bottom:10px">
-        <div class="field"><label>Substance type</label><select id="nc_drug_${i}">${opts}</select></div>
-        <div class="field"><label>Weight / qty</label><input type="number" id="nc_weight_${i}" placeholder="15"></div>
+  for(let i=1;i<=n;i++){
+    html += makeItemCard(i, `
+      <div class="field" style="margin-bottom:10px">
+        <label>Description</label>
+        <input type="text" id="br_desc_${i}" placeholder="One (1) 9mm Shell Casing">
       </div>
-      <div class="field"><label>EL tag (optional)</label><input type="text" id="nc_el_${i}" placeholder="EL-00123"></div>`);
-  }).join('');
+
+      <div class="row">
+        <div class="field">
+          <label>Status</label>
+          <select id="br_status_${i}" onchange="toggleMatch('br',${i})">
+            <option value="no">No match</option>
+            <option value="yes">Match found</option>
+          </select>
+        </div>
+
+        <div class="field match-box" id="br_match_box_${i}">
+          <label>Match to</label>
+          <textarea id="br_match_${i}" rows="2"></textarea>
+        </div>
+      </div>
+    `);
+  }
+
+  document.getElementById(containerId).innerHTML = html;
+  restoreValues(saved);
+
+  for(let i=1;i<=n;i++) toggleMatch("br", i);
+}
+
+/* =========================
+   LATENT PRINTS
+========================= */
+function genFieldsLP(){
+  const containerId = "lp_items_container";
+  const saved = saveContainerValues(containerId);
+  const n = +document.getElementById("lp_count").value;
+
+  let html = "";
+
+  for(let i=1;i<=n;i++){
+    html += makeItemCard(i, `
+      <div class="field" style="margin-bottom:10px">
+        <label>Item description</label>
+        <input type="text" id="lp_desc_${i}" placeholder="One (1) 9mm Shell Casing">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Status</label>
+          <select id="lp_status_${i}" onchange="toggleMatch('lp',${i})">
+            <option value="no">No usable prints</option>
+            <option value="inconclusive">Prints inconclusive</option>
+            <option value="yes">Prints identified</option>
+          </select>
+        </div>
+
+        <div class="field match-box" id="lp_match_box_${i}">
+          <label>Identified to</label>
+          <textarea id="lp_match_${i}" rows="2"></textarea>
+        </div>
+      </div>
+    `);
+  }
+
+  document.getElementById(containerId).innerHTML = html;
+  restoreValues(saved);
+
+  for(let i=1;i<=n;i++) toggleMatch("lp", i);
+}
+
+/* =========================
+   DNA
+========================= */
+function genFieldsDNA(){
+  const containerId = "dna_items_container";
+  const saved = saveContainerValues(containerId);
+  const n = +document.getElementById("dna_count").value;
+
+  let html = "";
+
+  for(let i=1;i<=n;i++){
+    html += makeItemCard(i, `
+      <div class="field" style="margin-bottom:10px">
+        <label>HEX profile</label>
+        <input type="text" id="dna_hex_${i}" placeholder="4F506-F7354">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Status</label>
+          <select id="dna_status_${i}" onchange="toggleMatch('dna',${i})">
+            <option value="no">Unmatched</option>
+            <option value="yes">Identified</option>
+          </select>
+        </div>
+
+        <div class="field match-box" id="dna_match_box_${i}">
+          <label>Match to</label>
+          <textarea id="dna_match_${i}" rows="2"></textarea>
+        </div>
+      </div>
+    `);
+  }
+
+  document.getElementById(containerId).innerHTML = html;
+  restoreValues(saved);
+
+  for(let i=1;i<=n;i++) toggleMatch("dna", i);
+}
+
+/* =========================
+   NARCOTICS
+========================= */
+function genFieldsNC(){
+  const containerId = "nc_items_container";
+  const saved = saveContainerValues(containerId);
+  const n = +document.getElementById("nc_count").value;
+
+  const opts = Object.keys(drugData)
+    .map(name => `<option value="${name}">${name}</option>`)
+    .join("");
+
+  let html = "";
+
+  for(let i=1;i<=n;i++){
+    html += makeItemCard(i, `
+      <div class="row" style="margin-bottom:10px">
+        <div class="field">
+          <label>Substance type</label>
+          <select id="nc_drug_${i}">
+            ${opts}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Weight / qty</label>
+          <input type="number" id="nc_weight_${i}" placeholder="15">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>EL tag (optional)</label>
+        <input type="text" id="nc_el_${i}" placeholder="EL-00123">
+      </div>
+    `);
+  }
+
+  document.getElementById(containerId).innerHTML = html;
+  restoreValues(saved);
 }
 
 function toggleMatch(p,i){
@@ -720,8 +845,12 @@ function buildLP(){
   let items='',results='';
   for(let i=1;i<=n;i++){
     items+=`[*] ${document.getElementById(`lp_desc_${i}`).value}\n`;
-    if(document.getElementById(`lp_status_${i}`).value==='yes')results+=`[*] Item ${i}: Latent prints [color=green]MATCHED[/color] to [color=blue]${document.getElementById(`lp_match_${i}`).value}[/color]\n`;
-    else results+=`[*] Item ${i}: [color=red]NO MATCH[/color].\n`;
+    if(document.getElementById(`lp_status_${i}`).value==='yes')
+      results+=`[*] Item ${i}: Latent prints [color=green]MATCHED[/color] to [color=blue]${document.getElementById(`lp_match_${i}`).value}[/color]\n`;
+    else if (document.getElementById(`lp_status_${i}`).value==='inconclusive')
+    results+=`[*] Item ${i}: Latent prints [color=orange]INCONCLUSIVE[/color].\n`;
+      else 
+      results+=`[*] Item ${i}: [color=red]NO RESULTS[/color].\n`;
   }
   showOutput('lp',`[divbox2=white][aligntable=left,0,35,0,0,0,0][tsslogo=150][/aligntable]
 
