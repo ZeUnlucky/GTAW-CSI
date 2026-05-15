@@ -610,19 +610,128 @@ function genFieldsBR(){
             <option value="yes">Match found</option>
           </select>
         </div>
+      </div>
 
-        <div class="field match-box" id="br_match_box_${i}">
-          <label>Match to</label>
-          <textarea id="br_match_${i}" rows="2"></textarea>
+      <div class="match-box" id="br_match_box_${i}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <label style="font-size:12px;color:var(--color-text-secondary)">
+            Match sections
+          </label>
+
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="copy-btn" onclick="addBRMatchSection(${i})">
+              Add section
+            </button>
+          </div>
         </div>
+
+        <div id="br_match_sections_${i}"></div>
       </div>
     `);
   }
 
   document.getElementById(containerId).innerHTML = html;
+
   restoreValues(saved);
 
-  for(let i=1;i<=n;i++) toggleMatch("br", i);
+  for(let i=1;i<=n;i++){
+    toggleMatch("br", i);
+  }
+}
+
+function addBRMatchSection(itemIndex, data = null){
+  const container = document.getElementById(`br_match_sections_${itemIndex}`);
+
+  const sectionId = `br_match_${itemIndex}_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "item-card";
+  wrapper.style.marginTop = "10px";
+  wrapper.id = sectionId;
+
+  wrapper.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div class="item-card-header" style="margin-bottom:0;">
+        Match Entry
+      </div>
+
+      <button
+        type="button"
+        class="copy-btn"
+        onclick="removeBRMatchSection('${sectionId}')"
+      >
+        Remove
+      </button>
+    </div>
+
+    <div class="field" style="margin-bottom:10px;">
+      <label>Matched to</label>
+      <textarea
+        id="${sectionId}_target"
+        rows="2"
+        placeholder="Matched firearm / casing / evidence"
+      >${data?.target || ''}</textarea>
+    </div>
+
+    <div class="field">
+      <label>Officer name</label>
+      <input
+        type="text"
+        id="${sectionId}_officer"
+        placeholder="Officer who submitted the match"
+        value="${data?.officer || ''}"
+      >
+    </div>
+  `;
+
+  container.appendChild(wrapper);
+}
+
+function removeBRMatchSection(sectionId){
+  const el = document.getElementById(sectionId);
+
+  if(el){
+    el.remove();
+  }
+}
+
+function fetchAllBRSections(itemIndex){
+  const container = document.getElementById(`br_match_sections_${itemIndex}`);
+
+  const sections = [];
+
+  container.querySelectorAll(".item-card").forEach(card => {
+    const target = card.querySelector("textarea")?.value || "";
+    const officer = card.querySelector("input")?.value || "";
+
+    sections.push({
+      matchedTo: target,
+      officer: officer
+    });
+  });
+
+  console.log(`Ballistics Item ${itemIndex} Sections`, sections);
+
+  return sections;
+}
+
+function getAllBRSections(itemIndex){
+  const container = document.getElementById(`br_match_sections_${itemIndex}`);
+
+  const results = [];
+
+  container.querySelectorAll(".item-card").forEach(card => {
+    const target = card.querySelector("textarea")?.value || "";
+    const officer = card.querySelector("input")?.value || "";
+
+    results.push({
+      target,
+      officer
+    });
+  });
+
+  return results;
 }
 
 /* =========================
@@ -749,11 +858,27 @@ function genFieldsNC(){
 
 function toggleMatch(p,i){
   const statusElement = document.getElementById(`${p}_status_${i}`);
-  const v=statusElement.value;
-  document.getElementById(`${p}_match_box_${i}`).classList.toggle('shown',v==='yes');
-  statusElement.style.borderColor = (v === 'yes' ? "green" : (v === "no" ? "red" : "orange"));
-}
+  const v = statusElement.value;
 
+  const box = document.getElementById(`${p}_match_box_${i}`);
+
+  box.classList.toggle('shown', v === 'yes');
+
+  statusElement.style.borderColor =
+    (v === 'yes'
+      ? "green"
+      : (v === "no"
+        ? "red"
+        : "orange"));
+
+  if(p === "br" && v === "yes"){
+    const sectionContainer = document.getElementById(`br_match_sections_${i}`);
+
+    if(sectionContainer && sectionContainer.children.length === 0){
+      addBRMatchSection(i);
+    }
+  }
+}
 function showOutput(tab,text){
   const out=document.getElementById(`${tab}_output`);
   document.getElementById(`${tab}_out_text`).value=text;
@@ -778,8 +903,21 @@ function buildBR(){
   for(let i=1;i<=n;i++){
     const desc=document.getElementById(`br_desc_${i}`).value,status=document.getElementById(`br_status_${i}`).value;
     ev+=`[*] Item ${i}: ${desc}\n`;
-    if(status==='yes')match+=`[*] Item ${i} - ${document.getElementById(`br_match_${i}`).value}\n`;
-    else noMatch+=`[*] Item ${i} - UNK\n`;
+    if(status === 'yes'){
+  const sections = getAllBRSections(i);
+
+  if(sections.length <= 0){
+    match += `[*] Item ${i} - MATCH FOUND (NO DETAILS PROVIDED)\n`;
+  }
+  else{
+  match += `[*] Item ${i}: [list]`;
+    sections.forEach(section => {
+      match += `[*] [color=blue]${section.target}[/color] | Submitted by: ${section.officer}\n`;
+    });
+  }
+  match += `[/list]`;
+}
+    else noMatch+=`[*] Item ${i} - [color=red]UNMATCHED[/color]\n`;
   }
   showOutput('br',`[divbox2=white][font=Arial][aligntable=left,0,35,0,0,0,0][tsslogo=150][/aligntable]
 
