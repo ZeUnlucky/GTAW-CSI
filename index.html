@@ -573,15 +573,65 @@ function saveContainerValues(containerId){
   const data = {};
 
   document.querySelectorAll(`#${containerId} input, #${containerId} textarea, #${containerId} select`)
-    .forEach(el => data[el.id] = el.value);
+    .forEach(el => {
+      data[el.id] = el.value;
+    });
+
+  /* save BR dynamic sections */
+  if(containerId === "br_items_container"){
+    data.__brSections = {};
+
+    document.querySelectorAll("[id^='br_match_sections_']").forEach(container => {
+
+      const itemIndex = container.id.split("_").pop();
+
+      data.__brSections[itemIndex] = [];
+
+      container.querySelectorAll(".item-card").forEach(card => {
+
+        const target =
+          card.querySelector("textarea")?.value || "";
+
+        const officer =
+          card.querySelector("input")?.value || "";
+
+        data.__brSections[itemIndex].push({
+          target,
+          officer
+        });
+      });
+    });
+  }
 
   return data;
 }
 
 function restoreValues(data){
+
+  /* restore normal fields */
   for(const id in data){
+
+    if(id === "__brSections")
+      continue;
+
     const el = document.getElementById(id);
-    if(el) el.value = data[id];
+
+    if(el){
+      el.value = data[id];
+    }
+  }
+
+  /* restore BR sections */
+  if(data.__brSections){
+
+    for(const itemIndex in data.__brSections){
+
+      const sections = data.__brSections[itemIndex];
+
+      sections.forEach(section => {
+        addBRMatchSection(itemIndex, section);
+      });
+    }
   }
 }
 
