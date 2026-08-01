@@ -690,6 +690,100 @@ select{
 .link-card-arrow svg{width:14px;height:14px}
 .link-card:hover .link-card-arrow{color:var(--accent-2);transform:translate(2px,-2px)}
 
+/* guide / landing page */
+.main{scroll-behavior:smooth}
+
+.hero-card{position:relative;overflow:hidden}
+.hero-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+}
+
+.welcome-hero{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+
+.welcome-hero-icon{
+  width:52px;height:52px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),#1d4ed8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  flex-shrink:0;
+  box-shadow:0 8px 20px -6px rgba(37,99,235,.5);
+}
+
+.welcome-hero-icon svg{width:26px;height:26px}
+.welcome-hero-text h1{font-size:21px;font-weight:700;color:var(--color-text-primary);margin-bottom:3px}
+.welcome-hero-text p{font-size:12.5px;color:var(--color-text-tertiary)}
+
+.doc-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+
+.doc-nav a{
+  font-size:12px;
+  font-weight:600;
+  padding:7px 14px;
+  border-radius:999px;
+  border:1px solid var(--color-border-secondary);
+  background:var(--overlay-soft);
+  color:var(--color-text-secondary);
+  text-decoration:none;
+  transition:.15s;
+}
+
+.doc-nav a:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--accent-2)}
+
+.doc h2{font-size:18px;font-weight:700;color:var(--color-text-primary);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.doc h3{font-size:14px;font-weight:700;color:var(--color-text-primary);margin:24px 0 10px}
+.doc h3:first-of-type{margin-top:0}
+.doc p{font-size:13.5px;line-height:1.75;color:var(--color-text-secondary);margin-bottom:14px}
+.doc p:last-child{margin-bottom:0}
+.doc strong{color:var(--color-text-primary);font-weight:600}
+.doc a{color:var(--accent-2);text-decoration:none;border-bottom:1px solid rgba(96,165,250,.35);transition:.15s}
+.doc a:hover{border-bottom-color:var(--accent-2)}
+
+.doc code{
+  font-family:var(--font-mono);
+  font-size:12px;
+  background:var(--color-background-secondary);
+  border:1px solid var(--color-border-tertiary);
+  padding:2px 6px;
+  border-radius:5px;
+  color:var(--color-text-info);
+}
+
+.doc .example{display:block;margin-top:4px;font-size:12px;color:var(--color-text-tertiary);font-style:italic}
+
+.doc ul{list-style:none;margin:0 0 14px;display:flex;flex-direction:column;gap:12px}
+.doc ul>li{position:relative;padding-left:20px;font-size:13.5px;line-height:1.75;color:var(--color-text-secondary)}
+.doc ul>li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--accent-2)}
+
+.doc ol{margin:0 0 14px 20px;display:flex;flex-direction:column;gap:10px}
+.doc ol>li{font-size:13.5px;line-height:1.75;color:var(--color-text-secondary);padding-left:4px}
+
+.doc ol.doc-sub{margin:10px 0 0 20px;gap:6px}
+.doc ol.doc-sub>li{font-size:13px}
+
+.doc .callout{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  margin-top:8px;
+  padding:14px 16px;
+  background:var(--color-background-info);
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:var(--border-radius-md);
+  font-size:13px;
+  color:var(--color-text-secondary);
+  line-height:1.6;
+}
+
+.doc .callout svg{width:16px;height:16px;color:var(--color-text-info);flex-shrink:0;margin-top:2px}
+.doc .callout strong{color:var(--color-text-info)}
+
 @media (max-width:900px){
   .layout{flex-direction:column}
   .sidebar{
@@ -742,11 +836,14 @@ select{
 
 <div class="layout">
   <nav class="sidebar">
-    <div class="nav-label">Report type</div>
-    <button class="nav-btn active" onclick="openTab(event,'ballistics')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Ballistics</button>
+    <div class="nav-label">Guide</div>
+    <button class="nav-btn active" onclick="openTab(event,'welcome')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.5-1-4-1.5-6-1.2v13c2 0 4.5.5 6 1.5 1.5-1 4-1.5 6-1.5v-13c-2-.3-4.5.2-6 1.2z"/><path d="M12 6.5v13"/></svg></span>Welcome</button>
+    <div class="nav-label" style="margin-top:14px">Report type</div>
+    <button class="nav-btn" onclick="openTab(event,'ballistics')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Ballistics</button>
     <button class="nav-btn" onclick="openTab(event,'latent-prints')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 3a7 7 0 0 1 7 7c0 3-1 4-1 7"/><path d="M12 3a7 7 0 0 0-7 7c0 5 2 6 2 9"/><path d="M12 7a3.5 3.5 0 0 1 3.5 3.5c0 3.5-1 5-1 6.5"/><path d="M12 7a3.5 3.5 0 0 0-3.5 3.5c0 4 1.5 5 1.5 7.5"/><path d="M12 11a1 1 0 0 1 1 1c0 4-1.5 6-1.5 8"/></svg></span>Latent prints</button>
     <button class="nav-btn" onclick="openTab(event,'dna')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span>DNA / Serology</button>
     <button class="nav-btn" onclick="openTab(event,'narcotics')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5 19.5 4.5a4.5 4.5 0 1 1 0 6.36L11.86 18.5a4.5 4.5 0 0 1-7.36-6.36Z"/><line x1="9" y1="15" x2="12.5" y2="11.5"/></svg></span>Narcotics</button>
+    <div class="nav-label" style="margin-top:14px">Resources</div>
     <button class="nav-btn" onclick="openTab(event,'links')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>Quick Links</button>
     <div class="sidebar-footer">
       <div class="sidebar-footer-text"><b>LSPD</b> · Forensic Science Division<br>Digital Report Toolkit</div>
@@ -755,7 +852,142 @@ select{
 
   <main class="main">
 
-    <div id="ballistics" class="section active">
+    <div id="welcome" class="section active">
+      <div class="card hero-card">
+        <div class="welcome-hero">
+          <div class="welcome-hero-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.5-1-4-1.5-6-1.2v13c2 0 4.5.5 6 1.5 1.5-1 4-1.5 6-1.5v-13c-2-.3-4.5.2-6 1.2z"/><path d="M12 6.5v13"/></svg></div>
+          <div class="welcome-hero-text">
+            <h1>Welcome</h1>
+            <p>LSPD Forensic Science Division — New Criminalist Guide</p>
+          </div>
+        </div>
+
+        <div class="doc-nav">
+          <a href="#csi-duties-card">CSI Duties</a>
+          <a href="#lab-duties-card">Lab Duties</a>
+          <a href="#final-words-card">Final Words</a>
+        </div>
+
+        <div class="doc">
+          <p>I think that a lot of newbies get a very big information dump to them when it comes to working forensics, especially in LSPD. In this little forum topic I will explain everything from A-Z when it comes to handling crime scenes OOCly, from homicides to fingerprint lifting, along with commands and expectations, to lab requests along with commands and explanation.</p>
+
+          <p>You may be asking: <strong>So, what is our role as FSD personnel?</strong></p>
+
+          <p>The answer is simple. We arrive on crime scenes, firstly is to <strong>preserve the quality</strong> of evidence, then we <strong>document and collect evidence</strong> and make sure that we have a clear communication between the detectives and the evidence they request to be worked on. What does that mean? That means that even if we don't collect the evidence on site, we can still process it in the lab after a work request has been submitted <a href="https://lspd.gta.world/viewtopic.php?f=1246&amp;t=33072" target="_blank" rel="noopener noreferrer">HERE</a>. We'll get to report making in a quick minute, but before that, let's go over what our duties are on scene, as a criminalist.</p>
+        </div>
+      </div>
+
+      <div class="card" id="csi-duties-card">
+        <div class="doc">
+          <h2><span class="card-title-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 1 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>CSI Duties</h2>
+
+          <h3>General CSI Duties</h3>
+          <p>You are in charge of a crime scene. What does that mean? That means that you are the top priority when it comes to handling the evidence on scene. You are the mediator between the evidence collection and documentation to the present detective on scene. If no detective is on scene? You call for one in the DB radio. Make sure to let them know what is going on in the scene (e.g. 1 person dead with casings and blood, for example).</p>
+          <p>As you probably know by now, the first thing we do is secure the crime scene. We need to make sure we have gloves on, first of all! We all have cones in the back of our vehicles, no matter which vehicle it is. Alongside that, we have crime scene tape. We want to put down cones if it's in the road, try not to block the entire road if possible, but if not, try to block it at a point where vehicles can make a U-Turn. Don't worry if you can't find a nearby spot, it's totally optional, but nice to have. Make sure there are police officers on the perimeter. We don't have guns, we want to be protected, and if someone goes into the perimeter, it's the officers' duty to deal with those.</p>
+          <p>Afterwards we document the scene, once without the CSI placards, and once with them. If there are already placards present, you can just take one set of pictures. Make sure to take a wide shot of the scene from different angles, to get the detectives a perspective on the global area, then a closeup of the evidence, in groups if possible, in each context.</p>
+          <p>In order to place CSI placards, you can do <code>/csi</code> and then you can use left mouse button to place them where you're facing. You don't have to input the command each time. To stop placing them, redo the command. After placing the placards, take more photos, in the same nature of the ones you've done before placing the placards.</p>
+          <p>Then comes the collection of the evidence, which is unique to each type of scene, as described below.</p>
+
+          <h3>Collection of Evidence</h3>
+          <p>Collection of evidence is personally my favorite type of work as a criminalist. You can really show others the true capabilities of your passive roleplay, while having almost nothing to stand in your way. So, let's get to the point. How do we collect each type of evidence?</p>
+
+          <ul>
+            <li>
+              <strong>Blood and general DNA</strong> would be by having a blood vial inside of your CSI kit. Inside of the vial there's a common cotton swab. You use the swab on the blood on the ground, collecting it and sealing it back inside of the vial.
+              <ol class="doc-sub" type="a">
+                <li>To lift blood from the ground, we use: <code>/bloodsplatter 1 collect</code></li>
+                <li>To lift DNA from a corpse, we use: <code>/cdna</code></li>
+              </ol>
+            </li>
+            <li>
+              <strong>Casings</strong> would be collected into a pill bottle, a regular one you get anywhere in the pharmacy, that we have in our CSI kit. We need to lift them with tweezers, and carefully not to damage them.
+              <ol class="doc-sub" type="a">
+                <li>To lift a casing from the ground, we use: <code>/shellcasing 1 collect</code></li>
+              </ol>
+            </li>
+            <li>
+              <strong>Fingerprints</strong> are lifted with a fingerprint tape, after sparkling some fingerprint powder on it and tapping it a few times to the surface you'd like to grab the prints from.
+              <ol class="doc-sub" type="a">
+                <li>To lift a fingerprint from a vehicle, we use: <code>/pullvehicleprints (SEAT)</code></li>
+                <li>To lift a fingerprint from an item, we use: <code>/pullfingerprints (item id)</code></li>
+              </ol>
+            </li>
+            <li>
+              <strong>Corpse handling</strong> usually consists of taking a screenshot of the corpse's <code>/cex</code> and <code>/cdamages</code> along with copying the <code>/cdna</code>. Make sure that when you do <code>/cloot</code> if no coroner comes to do that, and take any type of weapon <strong>after roleplaying patting them down around the waistline.</strong> Put the weapon inside of an evidence bag, that you can take from any police vehicle with <code>/teb</code>.
+              <ol class="doc-sub" type="a">
+                <li>To check a corpse's damages: <code>/cdamages</code></li>
+                <li>To check a corpse's inventory (if no coroner comes and after patting them down): <code>/cloot</code></li>
+                <li>To check a corpse's /ex: <code>/cex</code></li>
+                <li>To check a corpse's DNA: <code>/cdna</code></li>
+              </ol>
+            </li>
+          </ul>
+
+          <p>In conclusion, make sure to roleplay each thing to the best of your ability, you don't have to roleplay each blood splatter and casing, but if they're grouped, you can roleplay picking them up individually but collect them OOCly as a group, just so it won't be tedious and burn you out quickly. If the evidence is scattered further than, say, 2.5 meters, make sure to roleplay those individually. We don't expect you to burn yourself out on the first day on the job, but also not to be too sloppy.</p>
+
+          <div class="callout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div>Questions about collection? Feel free to reach me on Discord (<strong>zeunlucky</strong>) or send me a forum PM!</div>
+          </div>
+
+          <h3>Handling Evidence</h3>
+          <p>Now, you've collected all the evidence, and you're back at the lab. What do we do from here? Let's break it down to each type of evidence given to you.</p>
+
+          <ol>
+            <li>
+              <strong>Blood</strong> is simple. First, we go to the lab, and do this command: <code>/blood setlabel all (DD/MMM/YYYY HH:MM - WHAT HAPPENED - WHERE HAPPENED)</code>
+              <span class="example">e.g. /blood setlabel all 18/FEB/2026 15:54 - 1x Homicide - Vinewood BLVD</span>
+              Afterwards, we want to submit it to the lab database, so we go to the left side of the MRS laboratory, press Y, and submit blood.
+            </li>
+            <li>
+              <strong>Casings</strong> are just like blood. First, we go to the lab, and do this command: <code>/casing setlabel all (DD/MMM/YYYY HH:MM - WHAT HAPPENED - WHERE HAPPENED)</code>
+              <span class="example">e.g. /casing setlabel all 18/FEB/2026 15:54 - 1x Homicide - Vinewood BLVD</span>
+              Afterwards, we want to submit it to the lab database, so we go to the left side of the MRS laboratory, press Y, and submit casings.
+            </li>
+            <li>
+              <strong>Firearms, Narcotics and Fingerprint tapes</strong> are a bit more complicated. We go to the evidence locker, after securing the evidence inside of an evidence bag, and write the command <code>/el</code>. That will open the evidence locker, and then we input the data accordingly, just like instructed in the evidence locker. <strong>Make sure to write down or copy the evidence locker entry in chat afterwards!</strong>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card" id="lab-duties-card">
+        <div class="doc">
+          <h2><span class="card-title-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10 2v6.5L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 8.5V2"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>Lab Duties</h2>
+
+          <h3>General Lab Duties</h3>
+          <p>Our second part of the job, is taking the inputted evidence and checking it for any matches in the system. This part is a bit more tedious, but it allows us to get further in our fellow detectives investigations, and progress through the forensic work requests. So, let's cut right to the point. How do we handle each type of lab request?</p>
+          <p>First, let's go over what a lab request can contain. It can be any of these four: Ballistics, DNA/Serology, Latent prints or Narcotics. Each one has it's own unique testing method which I'll go over in a bit.</p>
+          <p>We have a generator <a href="https://zeunlucky.github.io/GTAW-CSI/" target="_blank" rel="noopener noreferrer">HERE</a>, that will help you fill out the paperwork needed after a work request. The DR# should be the number of request you put in in that section (so for example, 1 for your first DNA section). Requester should be last name and then serial, and email should be serial@lspd.online. The rest will be explained down below.</p>
+          <p>Each request, after completed, should go <a href="https://lspd.gta.world/viewforum.php?f=1127" target="_blank" rel="noopener noreferrer">HERE</a>, to the correct section (For example, if you completed a DNA request, make it in the DNA unit).</p>
+
+          <h3>Testing Evidence</h3>
+          <p>So, to test evidence, we have a method for each type of evidence. Let's start with the simple one and go on to the more advanced one. Obviously don't forget to roleplay each examination, but this will be an OOCly explanation as I'm yammering on for too long quite already.</p>
+
+          <ul>
+            <li><strong>Narcotics</strong> is the easiest of the bunch. In order to <strong>OOCly</strong> test for narcotics, you have to just see the tag of the narcotic substance, and the amount, and input it in the generator. Simple as that. You select the type of drug in the generator, and the amount, which should be the amount of grams or amount of pills.</li>
+            <li><strong>Fingerprints</strong> are fairly simple too. You take the fingerprint tape, or item that you want to check, and you take the index of it (either use <code>/invex</code> or check the orange # at the top right of the item). Then you want to <code>/checkfingerprints (invex)</code> and it'll print to your chat the many fingerprints - name/unknown of the people who have used the item before. You can insert those into the generator, where you can set the label as "Source - Fingerprint ID" and matched or unmatched depending if it, well, matched or unmatched. If it matched, change it to matched and put in the name at the matched to section. Make sure to return the tapes or items that you checked back to the evidence locker!</li>
+            <li><strong>Casings</strong> are a bit more complicated. When you go to the right side of MRS' lab, where the computers are, and press Y, you'll see a forensic database. You will be able to input two numbers at the top left. Those are the sample IDs you want to check in the database. Put them in, and press generate report. Make sure you are in the ballistics tab at the upmost left area. That will show you the casing entries. Run each unique serial into your notepad, and run <code>/casing testserial (SERIAL)</code>. That will test the serials against previous and future casings, which is where you'll want to put your RP in. Afterwards, go back to the database, and run the same numbers. Press the "Matched" button, and if it matches anything, you'll see it. Make sure to include it in your reports.</li>
+            <li><strong>Blood</strong> is the most complicated. When you go to the right side of MRS' lab, where the computers are, and press Y, you'll see a forensic database. You will be able to input two numbers at the top left. Those are the sample IDs you want to check in the database. Put them in, and press generate report. That will show you all samples in that range. You want to take each <strong>UNIQUE</strong> DNA string at the right, put it somewhere like notepad or anything you prefer, and then, outside of the database, run the command <code>/blood testdna (dna you copied)</code>. That will test the DNA against the system, and this is where you should put your roleplay of testing DNA in the system. After that, you should go back to the database (after testing all unique DNAs), and put the same sample IDs in the top left, and press, next to each unique sample ID, the "matched" button. If it's not green, and says "inconclusive", it's likely you didn't run the command on those DNA strings. After pressing the green button, it will show you all of the samples with the same DNA string, either from previous cases or cases that came after. I'd recommend pasting the DNA in the generator, and then if it matches anything, put it as matched and the label of what it matched to. After doing the same thing for all unique DNAs, you can do <code>/blood testblood (sampleID)</code> of each unique DNA sample ID, to check if it matches a person. If it says "NOT FOUND" or anything of the like, it's related to an unknown individual. If it says a name, put it in the generator at matched to. It will give the detectives the name of the person the blood is related to.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" id="final-words-card">
+        <div class="doc">
+          <h2><span class="card-title-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Final Words</h2>
+
+          <p>I know the lab duties look scary. I know it's not the best experience to see something as daunting as that, but as soon as you'll get the hang of it, you'll fly through it no problem.</p>
+
+          <div class="callout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div>Again, any question, message me on Discord (<strong>zeunlucky</strong>) or DM me. I am usually available for all questions, and would love to help.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ballistics" class="section">
       <div class="card">
         <div class="card-title"><span class="card-title-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Ballistics analysis report <span class="card-title-tag">BR</span></div>
         <div class="row">
