@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LSPD Forensic Portal</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232563eb'/%3E%3Cstop offset='1' stop-color='%231d4ed8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z'/%3E%3Cpath fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M9 12l2 2 4-4'/%3E%3C/svg%3E">
+<script>(function(){try{var t=localStorage.getItem('lspd_theme');document.documentElement.setAttribute('data-theme', t==='light'?'light':'dark');}catch(e){}})();</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 
-:root{
+:root,
+:root[data-theme="dark"]{
   --color-background-primary:#0d1420;
   --color-background-secondary:#131c2c;
   --color-background-tertiary:#070b12;
@@ -24,12 +26,6 @@
   --color-border-secondary:rgba(255,255,255,0.14);
   --color-border-tertiary:rgba(255,255,255,0.08);
 
-  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --font-mono:ui-monospace,SFMono-Regular,"SF Mono",Consolas,"Liberation Mono",monospace;
-
-  --border-radius-md:10px;
-  --border-radius-lg:16px;
-
   --accent:#2563eb;
   --accent-hover:#3b82f6;
   --accent-2:#60a5fa;
@@ -37,14 +33,70 @@
 
   --shadow-sm:0 1px 2px rgba(0,0,0,.35);
   --shadow-md:0 14px 34px -14px rgba(0,0,0,.6);
+
+  --overlay-faint:rgba(255,255,255,.015);
+  --overlay-soft:rgba(255,255,255,.03);
+  --overlay-chip:rgba(255,255,255,.04);
+  --topbar-glass:rgba(11,17,28,.82);
+  --grid-line:rgba(255,255,255,.025);
+  --scrollbar-thumb:rgba(255,255,255,.14);
+  --scrollbar-thumb-hover:rgba(255,255,255,.22);
+
+  --body-bg:
+    radial-gradient(1100px 620px at 15% -10%, rgba(37,99,235,.12), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, rgba(232,184,75,.05), transparent 55%),
+    radial-gradient(circle at top,#0f172a 0%,#070b14 100%);
+}
+
+:root[data-theme="light"]{
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f1f4f9;
+  --color-background-tertiary:#e7ebf2;
+  --color-background-info:rgba(37,99,235,0.09);
+  --color-background-success:rgba(5,150,105,0.10);
+
+  --color-text-primary:#111827;
+  --color-text-secondary:#4b5568;
+  --color-text-tertiary:#8792a3;
+  --color-text-info:#1d4ed8;
+
+  --color-border-primary:rgba(15,23,42,0.07);
+  --color-border-secondary:rgba(15,23,42,0.13);
+  --color-border-tertiary:rgba(15,23,42,0.09);
+
+  --accent:#2563eb;
+  --accent-hover:#3b82f6;
+  --accent-2:#3b82f6;
+  --gold:#c8912f;
+
+  --shadow-sm:0 1px 2px rgba(15,23,42,.07);
+  --shadow-md:0 14px 34px -14px rgba(15,23,42,.16);
+
+  --overlay-faint:rgba(15,23,42,.02);
+  --overlay-soft:rgba(15,23,42,.035);
+  --overlay-chip:rgba(15,23,42,.05);
+  --topbar-glass:rgba(255,255,255,.82);
+  --grid-line:rgba(15,23,42,.035);
+  --scrollbar-thumb:rgba(15,23,42,.16);
+  --scrollbar-thumb-hover:rgba(15,23,42,.26);
+
+  --body-bg:
+    radial-gradient(1100px 620px at 15% -10%, rgba(37,99,235,.07), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, rgba(200,145,47,.06), transparent 55%),
+    radial-gradient(circle at top,#ffffff 0%,#eef1f6 100%);
+}
+
+:root{
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,"SF Mono",Consolas,"Liberation Mono",monospace;
+
+  --border-radius-md:10px;
+  --border-radius-lg:16px;
 }
 
 body{
   font-family:var(--font-sans);
-  background:
-    radial-gradient(1100px 620px at 15% -10%, rgba(37,99,235,.12), transparent 60%),
-    radial-gradient(900px 520px at 100% 0%, rgba(232,184,75,.05), transparent 55%),
-    radial-gradient(circle at top,#0f172a 0%,#070b14 100%);
+  background:var(--body-bg);
   background-attachment:fixed;
   color:var(--color-text-primary);
   min-height:100vh;
@@ -52,6 +104,7 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
   position:relative;
+  transition:background-color .2s ease,color .2s ease;
 }
 
 body::before{
@@ -59,8 +112,8 @@ body::before{
   position:fixed;
   inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size:44px 44px;
   -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
   mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
@@ -70,9 +123,9 @@ body::before{
 
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:20px;border:2px solid transparent;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22);background-clip:padding-box}
-*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.16) transparent}
+::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:20px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);background-clip:padding-box}
+*{scrollbar-width:thin;scrollbar-color:var(--scrollbar-thumb) transparent}
 
 .shell{
   display:flex;
@@ -84,7 +137,7 @@ body::before{
 
 /* topbar */
 .topbar{
-  background:rgba(11,17,28,.82);
+  background:var(--topbar-glass);
   backdrop-filter:blur(14px) saturate(140%);
   -webkit-backdrop-filter:blur(14px) saturate(140%);
   border-bottom:1px solid var(--color-border-secondary);
@@ -136,19 +189,50 @@ body::before{
   margin-top:1px;
 }
 
+.topbar-actions{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
 .topbar-sub{
   font-size:11.5px;
   color:var(--color-text-secondary);
-  margin-left:auto;
   display:flex;
   align-items:center;
   gap:8px;
   padding:6px 13px;
   border:1px solid var(--color-border-secondary);
   border-radius:999px;
-  background:rgba(255,255,255,.02);
+  background:var(--overlay-soft);
   white-space:nowrap;
 }
+
+.theme-toggle{
+  width:34px;
+  height:34px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--color-border-secondary);
+  border-radius:999px;
+  background:var(--overlay-soft);
+  color:var(--color-text-secondary);
+  cursor:pointer;
+  transition:.15s;
+}
+
+.theme-toggle:hover{
+  background:var(--color-background-secondary);
+  color:var(--color-text-primary);
+}
+
+.theme-toggle svg{width:16px;height:16px}
+.theme-toggle .icon-moon{display:none}
+:root[data-theme="light"] .theme-toggle .icon-sun{display:none}
+:root[data-theme="light"] .theme-toggle .icon-moon{display:block}
 
 .status-dot{
   width:6px;height:6px;border-radius:50%;
@@ -162,7 +246,7 @@ body::before{
 
 /* staff bar */
 .staff-bar{
-  background:rgba(255,255,255,.015);
+  background:var(--overlay-faint);
   border-bottom:1px solid var(--color-border-tertiary);
   padding:14px 28px;
   display:flex;
@@ -224,7 +308,7 @@ body::before{
 .sidebar{
   width:230px;
   flex-shrink:0;
-  background:rgba(255,255,255,.012);
+  background:var(--overlay-faint);
   border-right:1px solid var(--color-border-tertiary);
   padding:22px 14px;
   display:flex;
@@ -277,7 +361,7 @@ body::before{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(255,255,255,.04);
+  background:var(--overlay-chip);
   color:var(--color-text-tertiary);
   flex-shrink:0;
   transition:.15s;
@@ -514,7 +598,7 @@ select{
   font-size:12.5px;
   line-height:1.7;
   padding:18px;
-  background:var(--color-background-tertiary);
+  background:#080d16;
   color:#8fb8f5;
   border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--border-radius-md);
@@ -531,7 +615,7 @@ select{
   padding:7px 14px;
   border:1px solid var(--color-border-secondary);
   border-radius:var(--border-radius-md);
-  background:rgba(255,255,255,.02);
+  background:var(--overlay-soft);
   color:var(--color-text-secondary);
   font-size:12px;
   font-weight:500;
@@ -588,7 +672,13 @@ select{
     <div class="topbar-title">LSPD Forensic Science Division</div>
     <div class="topbar-caption">Official Reporting Tool</div>
   </div>
-  <div class="topbar-sub"><span class="status-dot"></span>System Operational</div>
+  <div class="topbar-actions">
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark theme" aria-label="Toggle light / dark theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <div class="topbar-sub"><span class="status-dot"></span>System Operational</div>
+  </div>
 </div>
 
 <div class="staff-bar">
@@ -763,6 +853,15 @@ function setToday(id){
 function saveStaff(){localStorage.setItem('lspd_name',document.getElementById('global_name').value);localStorage.setItem('lspd_badge',document.getElementById('global_badge').value)}
 function loadStaff(){const n=localStorage.getItem('lspd_name'),b=localStorage.getItem('lspd_badge');if(n)document.getElementById('global_name').value=n;if(b)document.getElementById('global_badge').value=b}
 
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('lspd_theme', theme);
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+}
+
 function openTab(evt,tab){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -818,6 +917,36 @@ function saveContainerValues(containerId){
     });
   }
 
+  /* save LP dynamic print sections */
+  if(containerId === "lp_items_container"){
+    data.__lpSections = {};
+
+    document.querySelectorAll("[id^='lp_prints_']").forEach(container => {
+
+      const itemIndex = container.id.split("_").pop();
+
+      data.__lpSections[itemIndex] = [];
+
+      container.querySelectorAll(".item-card").forEach(card => {
+
+        const hex =
+          card.querySelector("input[id$='_hex']")?.value || "";
+
+        const status =
+          card.querySelector("select")?.value || "no";
+
+        const match =
+          card.querySelector("input[id$='_match']")?.value || "";
+
+        data.__lpSections[itemIndex].push({
+          hex,
+          status,
+          match
+        });
+      });
+    });
+  }
+
   return data;
 }
 
@@ -826,7 +955,7 @@ function restoreValues(data){
   /* restore normal fields */
   for(const id in data){
 
-    if(id === "__brSections")
+    if(id === "__brSections" || id === "__lpSections")
       continue;
 
     const el = document.getElementById(id);
@@ -845,6 +974,19 @@ function restoreValues(data){
 
       sections.forEach(section => {
         addBRMatchSection(itemIndex, section);
+      });
+    }
+  }
+
+  /* restore LP print sections */
+  if(data.__lpSections){
+
+    for(const itemIndex in data.__lpSections){
+
+      const sections = data.__lpSections[itemIndex];
+
+      sections.forEach(section => {
+        addLPPrintSection(itemIndex, section);
       });
     }
   }
@@ -1016,28 +1158,120 @@ function genFieldsLP(){
         <input type="text" id="lp_desc_${i}" placeholder="One (1) 9mm Shell Casing">
       </div>
 
-      <div class="row">
-        <div class="field">
-          <label>Status</label>
-          <select id="lp_status_${i}" onchange="toggleMatch('lp',${i})">
-            <option value="no">No usable prints</option>
-            <option value="inconclusive">Prints inconclusive</option>
-            <option value="yes">Prints identified</option>
-          </select>
-        </div>
-
-        <div class="field match-box" id="lp_match_box_${i}">
-          <label>Identified to</label>
-          <textarea id="lp_match_${i}" rows="2"></textarea>
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <label style="font-size:12px;color:var(--color-text-secondary)">Latent prints</label>
+        <button type="button" class="copy-btn" onclick="addLPPrintSection(${i})">Add print</button>
       </div>
+
+      <div id="lp_prints_${i}"></div>
     `);
   }
 
   document.getElementById(containerId).innerHTML = html;
-  restoreValues(saved);
 
-  for(let i=1;i<=n;i++) toggleMatch("lp", i);
+  restoreValues(saved);
+}
+
+function addLPPrintSection(itemIndex, data = null){
+  const container = document.getElementById(`lp_prints_${itemIndex}`);
+
+  const sectionId = `lp_print_${itemIndex}_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+
+  const status = data?.status || "no";
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "item-card";
+  wrapper.style.marginTop = "10px";
+  wrapper.id = sectionId;
+
+  wrapper.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div class="item-card-header" style="margin-bottom:0;">
+        Print Entry
+      </div>
+
+      <button
+        type="button"
+        class="copy-btn"
+        onclick="removeLPPrintSection('${sectionId}')"
+      >
+        Remove
+      </button>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+      <div class="field">
+        <label>HEX</label>
+        <input
+          type="text"
+          id="${sectionId}_hex"
+          placeholder="4F506-F7354"
+          value="${data?.hex || ''}"
+        >
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="${sectionId}_status" onchange="toggleLPPrintMatch('${sectionId}')">
+          <option value="no" ${status === 'no' ? 'selected' : ''}>No usable prints</option>
+          <option value="inconclusive" ${status === 'inconclusive' ? 'selected' : ''}>Prints inconclusive</option>
+          <option value="yes" ${status === 'yes' ? 'selected' : ''}>Prints identified</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field match-box" id="${sectionId}_matchbox">
+      <label>Matched to</label>
+      <input
+        type="text"
+        id="${sectionId}_match"
+        placeholder="Name of matched individual"
+        value="${data?.match || ''}"
+      >
+    </div>
+  `;
+
+  container.appendChild(wrapper);
+
+  toggleLPPrintMatch(sectionId);
+}
+
+function removeLPPrintSection(sectionId){
+  const el = document.getElementById(sectionId);
+
+  if(el){
+    el.remove();
+  }
+}
+
+function toggleLPPrintMatch(sectionId){
+  const status = document.getElementById(`${sectionId}_status`).value;
+  const box = document.getElementById(`${sectionId}_matchbox`);
+
+  box.classList.toggle('shown', status === 'yes');
+}
+
+function getAllLPPrints(itemIndex){
+  const container = document.getElementById(`lp_prints_${itemIndex}`);
+
+  const results = [];
+
+  if(!container) return results;
+
+  container.querySelectorAll(".item-card").forEach(card => {
+    const hex = card.querySelector("input[id$='_hex']")?.value || "";
+    const status = card.querySelector("select")?.value || "no";
+    const match = card.querySelector("input[id$='_match']")?.value || "";
+
+    results.push({
+      hex,
+      status,
+      match
+    });
+  });
+
+  return results;
 }
 
 /* =========================
@@ -1250,12 +1484,24 @@ function buildLP(){
   let items='',results='';
   for(let i=1;i<=n;i++){
     items+=`[*] ${document.getElementById(`lp_desc_${i}`).value}\n`;
-    if(document.getElementById(`lp_status_${i}`).value==='yes')
-      results+=`[*] Item ${i}: Latent prints [color=green]MATCHED[/color] to [color=blue]${document.getElementById(`lp_match_${i}`).value}[/color]\n`;
-    else if (document.getElementById(`lp_status_${i}`).value==='inconclusive')
-    results+=`[*] Item ${i}: Latent prints [color=orange]INCONCLUSIVE[/color].\n`;
-      else 
-      results+=`[*] Item ${i}: [color=red]NO RESULTS[/color].\n`;
+
+    const prints = getAllLPPrints(i);
+
+    if(prints.length <= 0){
+      results+=`[*] Item ${i} - [color=red]NO PRINTS RECOVERED[/color]\n`;
+    }
+    else{
+      results+=`[*] Item ${i}: [list]`;
+      prints.forEach(p => {
+        if(p.status==='yes')
+          results+=`[*] HEX ${p.hex}: [color=green]MATCHED[/color] to [color=blue]${p.match}[/color]\n`;
+        else if(p.status==='inconclusive')
+          results+=`[*] HEX ${p.hex}: [color=orange]INCONCLUSIVE[/color]\n`;
+        else
+          results+=`[*] HEX ${p.hex}: [color=red]NO USABLE PRINTS[/color]\n`;
+      });
+      results+=`[/list]`;
+    }
   }
   showOutput('lp',`[divbox2=white][aligntable=left,0,35,0,0,0,0][tsslogo=150][/aligntable]
 
