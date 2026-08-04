@@ -784,6 +784,112 @@ select{
 .doc .callout svg{width:16px;height:16px;color:var(--color-text-info);flex-shrink:0;margin-top:2px}
 .doc .callout strong{color:var(--color-text-info)}
 
+/* notepad */
+.notepad-panel{
+  width:300px;
+  flex-shrink:0;
+  align-self:flex-start;
+  background:var(--color-background-primary);
+  border-left:1px solid var(--color-border-tertiary);
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:64px;
+  max-height:calc(100vh - 64px);
+  transition:width .2s ease;
+}
+
+.notepad-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:16px;
+  border-bottom:1px solid var(--color-border-tertiary);
+  flex-shrink:0;
+}
+
+.notepad-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--color-text-primary);
+  white-space:nowrap;
+}
+
+.notepad-icon{
+  width:22px;height:22px;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-background-info);
+  color:var(--color-text-info);
+  flex-shrink:0;
+}
+
+.notepad-icon svg{width:12px;height:12px}
+
+.notepad-header-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+.notepad-collapse-btn{
+  width:26px;height:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--color-border-secondary);
+  border-radius:7px;
+  background:var(--overlay-soft);
+  color:var(--color-text-secondary);
+  cursor:pointer;
+  transition:.15s;
+  flex-shrink:0;
+}
+
+.notepad-collapse-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.notepad-collapse-btn svg{width:13px;height:13px;transition:transform .2s ease;display:block}
+
+.notepad-textarea{
+  flex:1;
+  width:100%;
+  border:none;
+  outline:none;
+  resize:none;
+  background:transparent;
+  color:var(--color-text-primary);
+  font-family:var(--font-sans);
+  font-size:13px;
+  line-height:1.6;
+  padding:14px 16px;
+  min-height:160px;
+}
+
+.notepad-textarea::placeholder{color:var(--color-text-tertiary)}
+
+.notepad-footer{
+  padding:10px 16px;
+  border-top:1px solid var(--color-border-tertiary);
+  font-size:10.5px;
+  color:var(--color-text-tertiary);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.notepad-dot{width:5px;height:5px;border-radius:50%;background:#34d399;flex-shrink:0}
+
+.notepad-panel.collapsed{width:52px}
+.notepad-panel.collapsed .notepad-header{justify-content:center;padding:16px 8px}
+.notepad-panel.collapsed .notepad-title,
+.notepad-panel.collapsed .notepad-header-actions .copy-btn,
+.notepad-panel.collapsed .notepad-textarea,
+.notepad-panel.collapsed .notepad-footer{display:none}
+.notepad-panel.collapsed .notepad-collapse-btn svg{transform:rotate(180deg)}
+
 @media (max-width:900px){
   .layout{flex-direction:column}
   .sidebar{
@@ -803,6 +909,15 @@ select{
   .topbar{padding:0 16px}
   .staff-bar{padding:12px 16px}
   .link-grid{grid-template-columns:1fr}
+  .notepad-panel{
+    width:100%;
+    position:static;
+    max-height:none;
+    border-left:none;
+    border-top:1px solid var(--color-border-tertiary);
+  }
+  .notepad-panel.collapsed{width:100%}
+  .notepad-textarea{min-height:180px}
 }
 
 </style>
@@ -1139,6 +1254,20 @@ select{
     </div>
 
   </main>
+
+  <aside class="notepad-panel" id="notepad_panel">
+    <div class="notepad-header">
+      <span class="notepad-title"><span class="notepad-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Notepad</span>
+      <div class="notepad-header-actions">
+        <button type="button" class="copy-btn" id="notepad_clear" onclick="clearNotepad()">Clear</button>
+        <button type="button" class="notepad-collapse-btn" onclick="toggleNotepadPanel()" title="Collapse notepad" aria-label="Collapse notepad">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <textarea id="notepad_text" class="notepad-textarea" placeholder="Jot down notes here — case numbers, sample IDs, reminders..." oninput="saveNotepad()"></textarea>
+    <div class="notepad-footer"><span class="notepad-dot"></span>Auto-saved · shared across tabs</div>
+  </aside>
 </div>
 </div>
 
@@ -1182,6 +1311,31 @@ function applyTheme(theme){
 function toggleTheme(){
   const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
   applyTheme(current === 'light' ? 'dark' : 'light');
+}
+
+function saveNotepad(){
+  localStorage.setItem('lspd_notepad', document.getElementById('notepad_text').value);
+}
+function loadNotepad(){
+  const v = localStorage.getItem('lspd_notepad');
+  if(v) document.getElementById('notepad_text').value = v;
+}
+function clearNotepad(){
+  document.getElementById('notepad_text').value = '';
+  saveNotepad();
+  const btn = document.getElementById('notepad_clear');
+  btn.textContent = 'Cleared!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Clear'; btn.classList.remove('copied'); }, 1500);
+}
+function toggleNotepadPanel(){
+  const collapsed = document.getElementById('notepad_panel').classList.toggle('collapsed');
+  localStorage.setItem('lspd_notepad_collapsed', collapsed ? '1' : '0');
+}
+function loadNotepadCollapsed(){
+  if(localStorage.getItem('lspd_notepad_collapsed') === '1'){
+    document.getElementById('notepad_panel').classList.add('collapsed');
+  }
 }
 
 function openTab(evt,tab){
@@ -1986,7 +2140,7 @@ The submitted item, as well as any associated relevant items, have been properly
 [aligntable=right,0,0,0,0,0,0][size=75]Forensic Science Division[/size][/aligntable][/divbox2]`);
 }
 
-window.onload=function(){loadStaff();genFieldsBR();genFieldsLP();genFieldsDNA();genFieldsNC()};
+window.onload=function(){loadStaff();loadNotepad();loadNotepadCollapsed();genFieldsBR();genFieldsLP();genFieldsDNA();genFieldsNC()};
 </script>
 </body>
 </html>
